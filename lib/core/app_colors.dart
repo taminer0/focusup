@@ -4,8 +4,8 @@ class AppColors {
   AppColors._();
 
   // Màu chính và nền
-  static const Color background = Color(0xFFFFFCF7);
-  static const Color backgroundN = Color(0xFFF9F4EC);
+  static const Color backgroundSecondary = Color(0xFFFFFCF7);
+  static const Color background = Color(0xFFF9F4EC);
   static const Color white = Color(0xFFFFFFFF);
   static const Color border = Color(0xFFE8E3D9);
 
@@ -29,7 +29,7 @@ class AppColors {
   static const Color icon = Color(0xFF242425);
   static const Color tick = Color(0xFF5D8A6C);
   static const Color green = Color(0xFF255649);
-  static const Color greenlight = Color(0xFFDCEAE4);
+  static const Color greenLight = Color(0xFFDCEAE4);
   static const Color yellow = Color(0xFFF9C971);
   static const Color yellowLight = Color(0xFFFCE1B7);
   static const Color coral = Color(0xFFFB6564);
