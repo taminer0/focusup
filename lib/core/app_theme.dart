@@ -62,7 +62,7 @@ class AppTheme {
           elevation: 0,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(14),
           ),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: 16,

@@ -35,6 +35,13 @@ class AppColors {
   static const Color coral = Color(0xFFFB6564);
   static const Color coralLight = Color(0xFFFDE3E0);
 
+  // Màu nền núi ở Splash
+  static const Color sun = Color(0xFFFBC86F);
+  static const Color hillGrayLight = Color(0xFFEDE9E3);
+  static const Color hillGrayDark = Color(0xFFC1C1BD);
+  static const Color hillGreenLight = Color(0xFF6C9B7C);
+  static const Color hillGreenDark = Color(0xFF4F7F69);
+
 
 
 

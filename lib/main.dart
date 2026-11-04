@@ -1,15 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
-import 'widgets/primary_button.dart';
-import 'widgets/app_text_field.dart';
+import 'models/usage_stats.dart';
+import 'providers/app_limit_provider.dart';
+import 'providers/detox_provider.dart';
+import 'providers/stats_provider.dart';
+import 'screens/main_shell.dart';
+import 'services/app_limit_repository.dart';
+import 'services/usage_repository.dart';
+import 'providers/profile_provider.dart';
+import 'services/user_repository.dart';
+import 'providers/task_provider.dart';
+import 'services/task_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
-  runApp(const FocusUpApp());
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AppLimitProvider(MockAppLimitRepository())..load(),
+        ),
+        ChangeNotifierProvider(create: (_) => DetoxProvider()),
+        ChangeNotifierProvider(
+          create: (_) => StatsProvider(MockUsageRepository())..load(StatsPeriod.week),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ProfileProvider(MockUserRepository())..load(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TaskProvider(MockTaskRepository())..load(),
+        ),
+      ],
+      child: const FocusUpApp(),
+    ),
+  );
 }
 
 class FocusUpApp extends StatelessWidget {
@@ -21,33 +48,7 @@ class FocusUpApp extends StatelessWidget {
       title: 'FocusUp',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Đăng ký', style: AppTheme.logo(size: 32)),
-                const SizedBox(height: 24),
-                const AppTextField(
-                  label: 'Email',
-                  hint: 'Nhập email của bạn',
-                  prefixIcon: Icons.email_outlined,
-                ),
-                const SizedBox(height: 16),
-                const AppTextField(
-                  label: 'Mật khẩu',
-                  hint: 'Nhập mật khẩu',
-                  isPassword: true,
-                ),
-                const SizedBox(height: 24),
-                PrimaryButton(text: 'Đăng ký', onPressed: () {}),
-              ],
-            ),
-          ),
-        ),
-      ),
+      home: const MainShell(),
     );
   }
 }
