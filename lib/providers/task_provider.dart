@@ -44,6 +44,7 @@ class TaskProvider extends ChangeNotifier {
                 (t) => !t.start.isBefore(monday) && t.start.isBefore(nextMonday)));
     }
   }
+  List<Task> _external = []; // sự kiện từ Google Calendar
 
   void setFilter(TaskFilter f) {
     _filter = f;
@@ -54,7 +55,7 @@ class TaskProvider extends ChangeNotifier {
     _status = LoadStatus.loading;
     notifyListeners();
     try {
-      _tasks = await _repo.getTasks();
+      _tasks = [...await _repo.getTasks(), ..._external];
       _status = LoadStatus.success;
     } catch (_) {
       _status = LoadStatus.error;
@@ -91,6 +92,7 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> remove(String id) async {
     _tasks = _tasks.where((t) => t.id != id).toList(); // xóa ngay trên giao diện
+    _external = _external.where((t) => t.id != id).toList();
     notifyListeners();
     try {
       await _repo.deleteTask(id);
@@ -99,8 +101,23 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+
   void _replace(Task t) {
     _tasks = [for (final e in _tasks) e.id == t.id ? t : e];
+    _external = [for (final e in _external) e.id == t.id ? t : e];
+    notifyListeners();
+  }
+  /// Nhập sự kiện Google Calendar. Giữ trạng thái "đã xong" của lần trước, không nhân đôi.
+  void importExternal(List<Task> events) {
+    final doneIds = {
+      for (final t in _tasks)
+        if (t.source == 'google' && t.isDone) t.externalId
+    };
+    _external = [
+      for (final e in events)
+        doneIds.contains(e.externalId) ? e.copyWith(isDone: true) : e
+    ];
+    _tasks = [..._tasks.where((t) => t.source != 'google'), ..._external];
     notifyListeners();
   }
 }

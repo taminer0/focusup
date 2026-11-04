@@ -8,6 +8,7 @@ import '../../providers/task_provider.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/svg_toggle.dart';
 import '../../widgets/task_card.dart';
+import '../calendar/calendar_flow.dart';
 
 class AddTaskScreen extends StatefulWidget {
   /// Có giá trị = đang Sửa, null = đang Thêm.
@@ -458,7 +459,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           SvgToggle(
             value: _syncCalendar,
-            onChanged: (v) => setState(() => _syncCalendar = v),
+            onChanged: (v) async {
+              if (!v) {
+                setState(() => _syncCalendar = false);
+                return;
+              }
+              final ok = await CalendarFlow.ensureConnected(context);
+              if (mounted) setState(() => _syncCalendar = ok);
+            },
           ),
         ],
       ),

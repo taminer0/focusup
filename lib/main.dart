@@ -13,6 +13,8 @@ import 'providers/profile_provider.dart';
 import 'services/user_repository.dart';
 import 'providers/task_provider.dart';
 import 'services/task_repository.dart';
+import 'providers/calendar_provider.dart';
+import 'services/calendar_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +34,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => TaskProvider(MockTaskRepository())..load(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CalendarProvider(MockCalendarRepository()),
         ),
       ],
       child: const FocusUpApp(),

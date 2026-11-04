@@ -11,6 +11,8 @@ class Task {
   final bool isDone;
   final bool hasTime;
   final List<int> repeatDays;
+  final String? externalId; // id sự kiện bên Google Calendar
+  final String source; // 'local' hoặc 'google'
 
   const Task({
     required this.id,
@@ -23,6 +25,8 @@ class Task {
     this.isDone = false,
     this.hasTime = true,
     this.repeatDays = const [],
+    this.externalId,
+    this.source = 'local',
   });
 
   static String _hm(DateTime d) =>
@@ -33,7 +37,6 @@ class Task {
     return end == null ? _hm(start) : '${_hm(start)} - ${_hm(end!)}';
   }
 
-  /// Vd: "Thứ 4, 30/9"
   String get dateLabel {
     final wd = start.weekday == 7 ? 'CN' : 'Thứ ${start.weekday + 1}';
     return '$wd, ${start.day}/${start.month}';
@@ -52,6 +55,8 @@ class Task {
     isDone: (json['is_done'] ?? false) as bool,
     hasTime: (json['has_time'] ?? true) as bool,
     repeatDays: List<int>.from(json['repeat_days'] ?? const []),
+    externalId: json['external_id'] as String?,
+    source: (json['source'] ?? 'local') as String,
   );
 
   Map<String, dynamic> toJson() => {
@@ -65,6 +70,8 @@ class Task {
     'is_done': isDone,
     'has_time': hasTime,
     'repeat_days': repeatDays,
+    'external_id': externalId,
+    'source': source,
   };
 
   Task copyWith({
@@ -89,5 +96,7 @@ class Task {
         isDone: isDone ?? this.isDone,
         hasTime: hasTime ?? this.hasTime,
         repeatDays: repeatDays ?? this.repeatDays,
+        externalId: externalId,
+        source: source,
       );
 }
