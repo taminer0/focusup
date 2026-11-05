@@ -2,6 +2,7 @@ import '../models/task.dart';
 
 abstract class CalendarRepository {
   Future<void> connect(); // OAuth Google (backend/native làm sau)
+  Future<void> disconnect(); // DELETE /calendar/connect
   Future<List<Task>> getEvents({int days = 30}); // 30 ngày tới
 }
 
@@ -9,6 +10,10 @@ class MockCalendarRepository implements CalendarRepository {
   @override
   Future<void> connect() =>
       Future.delayed(const Duration(milliseconds: 600));
+
+  @override
+  Future<void> disconnect() =>
+      Future.delayed(const Duration(milliseconds: 300));
 
   @override
   Future<List<Task>> getEvents({int days = 30}) async {

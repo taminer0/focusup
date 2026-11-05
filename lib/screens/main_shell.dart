@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
 import '../widgets/app_bottom_nav.dart';
+import 'block/block_screens.dart';
 import 'focus/focus_screen.dart';
 import 'home/home_screen.dart';
 import 'profile/profile_screen.dart';
@@ -37,13 +38,15 @@ class _MainShellState extends State<MainShell> {
       ProfileScreen(onGoToTab: _goTo, onOpenTasks: _openTasks),
     ];
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundSecondary,
-      body: SafeArea(
-        bottom: false,
-        child: IndexedStack(index: _index, children: pages),
+    return BlockListener(
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundSecondary,
+        body: SafeArea(
+          bottom: false,
+          child: IndexedStack(index: _index, children: pages),
+        ),
+        bottomNavigationBar: AppBottomNav(currentIndex: _index, onTap: _goTo),
       ),
-      bottomNavigationBar: AppBottomNav(currentIndex: _index, onTap: _goTo),
     );
   }
 }

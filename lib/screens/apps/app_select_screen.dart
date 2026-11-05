@@ -75,7 +75,12 @@ class _AppSelectScreenState extends State<AppSelectScreen> {
   Widget build(BuildContext context) {
     final apps = AppCatalog.items
         .where((a) => a.name.toLowerCase().contains(_query.toLowerCase()))
-        .toList();
+        .toList()
+      ..sort((a, b) {
+        final sa = _selected.containsKey(a.package) ? 0 : 1;
+        final sb = _selected.containsKey(b.package) ? 0 : 1;
+        return sa.compareTo(sb); // app đã chọn lên trước, giữ nguyên thứ tự còn lại
+      });
 
     return Scaffold(
       backgroundColor: AppColors.backgroundSecondary,

@@ -8,7 +8,6 @@ import '../../providers/task_provider.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/svg_toggle.dart';
 import '../../widgets/task_card.dart';
-import '../calendar/calendar_flow.dart';
 
 class AddTaskScreen extends StatefulWidget {
   /// Có giá trị = đang Sửa, null = đang Thêm.
@@ -43,7 +42,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   TimeOfDay _to = const TimeOfDay(hour: 9, minute: 0);
 
   bool _hasLocation = false;
-  bool _syncCalendar = false;
 
   bool get _isEditing => widget.initial != null;
 
@@ -252,9 +250,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               hintText: 'VD: S515, Nguyễn Trãi'),
                         ),
                       ],
-                      const SizedBox(height: 24),
-
-                      _calendarCard(),
                     ],
                   ),
                 ),
@@ -427,49 +422,4 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  Widget _calendarCard() {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundSecondary,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Image.asset(
-            'assets/images/logocalen.png',
-            width: 28,
-            height: 28,
-            errorBuilder: (_, __, ___) =>
-            const Icon(Icons.event, size: 28, color: AppColors.green),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Đồng bộ với Google Calendar',
-                    style: AppTextStyles.body
-                        .copyWith(fontWeight: FontWeight.w700, fontSize: 13)),
-                Text('Thêm nhiệm vụ vào lịch của bạn',
-                    style: AppTextStyles.caption.copyWith(fontSize: 10)),
-              ],
-            ),
-          ),
-          SvgToggle(
-            value: _syncCalendar,
-            onChanged: (v) async {
-              if (!v) {
-                setState(() => _syncCalendar = false);
-                return;
-              }
-              final ok = await CalendarFlow.ensureConnected(context);
-              if (mounted) setState(() => _syncCalendar = ok);
-            },
-          ),
-        ],
-      ),
-    );
-  }
 }

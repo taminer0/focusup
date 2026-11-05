@@ -10,6 +10,8 @@ import '../../providers/detox_provider.dart';
 import '../../widgets/svg_toggle.dart';
 import '../../widgets/app_icon_view.dart';
 import '../apps/app_select_screen.dart';
+import '../block/block_screens.dart';
+import 'package:flutter/material.dart';
 
 class FocusScreen extends StatelessWidget {
   const FocusScreen({super.key});
@@ -95,9 +97,7 @@ class FocusScreen extends StatelessWidget {
                   children: [
                     Text('Ứng dụng giới hạn', style: AppTextStyles.heading),
                     GestureDetector(
-                      onTap: () {
-                        // TODO: sang danh sách tất cả app giới hạn
-                      },
+                      onTap: () => AppSelectScreen.open(context),
                       child: Text('Xem tất cả  >',
                           style: AppTextStyles.caption.copyWith(fontSize: 11)),
                     ),
@@ -135,6 +135,7 @@ class FocusScreen extends StatelessWidget {
           ),
         );
       case LoadStatus.success:
+        return _LimitCarousel(items: p.limits);
         if (p.limits.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -197,7 +198,11 @@ class _DetoxCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          SvgToggle(value: detox.enabled, onChanged: detox.setEnabled),
+          SvgToggle(value: detox.enabled,
+              onChanged: (v) {
+                detox.setEnabled(v);
+                if (!v) context.read<AppLimitProvider>().stopDemo();
+              },),
         ],
       ),
     );
@@ -226,10 +231,22 @@ class _LimitTile extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        // TODO: mở hộp thoại đặt thời gian giới hạn cho app này
+        final p = context.read<AppLimitProvider>();
+        if (p.isLocked(item.id)) {
+          BlockFlow.openPause(context, item); // đang khóa -> màn Tạm dừng
+        } else {
+          // TODO: mở hộp thoại đặt thời gian giới hạn cho app này
+        }
       },
-      onLongPress: () =>
-          context.read<AppLimitProvider>().startDemoSession(item.id),
+      onLongPress: () {
+        if (!context.read<DetoxProvider>().enabled) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Bật Detox Mode để bắt đầu tính giờ')),
+          );
+          return;
+        }
+        context.read<AppLimitProvider>().startDemoSession(item.id);
+      },
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
         decoration: BoxDecoration(
@@ -349,6 +366,71 @@ class _AddAppCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+// ======================= Thanh trượt các app giới hạn =======================
+class _LimitCarousel extends StatefulWidget {
+  final List<AppLimit> items;
+  const _LimitCarousel({required this.items});
+
+  @override
+  State<_LimitCarousel> createState() => _LimitCarouselState();
+}
+
+class _LimitCarouselState extends State<_LimitCarousel> {
+  final _controller = PageController(viewportFraction: 0.92);
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = widget.items;
+    // Nếu xóa bớt app làm số trang giảm thì không bị lệch chỉ số
+    final current = _page.clamp(0, items.length - 1);
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 136,
+          child: PageView.builder(
+            controller: _controller,
+            padEnds: false,
+            itemCount: items.length,
+            onPageChanged: (i) => setState(() => _page = i),
+            itemBuilder: (_, i) => Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: _LimitTile(item: items[i]),
+            ),
+          ),
+        ),
+        if (items.length > 1) ...[
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (var i = 0; i < items.length; i++)
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: i == current ? 18 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: i == current
+                        ? AppColors.green
+                        : AppColors.border,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }

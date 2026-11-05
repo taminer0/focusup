@@ -15,7 +15,7 @@ class MockAppLimitRepository implements AppLimitRepository {
       packageName: 'com.zhiliaoapp.musically',
       name: 'Tiktok',
       sessionLimitMinutes: 30,
-      sessionUsedSeconds: 12 * 60,
+      sessionUsedSeconds: 29 * 60, // demo: gần đầy để thấy màn chặn nhanh
     ),
   ];
 
